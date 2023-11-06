@@ -3,6 +3,10 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+### Ignored because files are too big (2 GB)
+src/main/resources/dataset/
+resources/
+
 ### IntelliJ IDEA ###
 .idea/
 *.iws

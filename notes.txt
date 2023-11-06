@@ -1,0 +1,17 @@
+
+had to update pom.xml & packages names due to maven compilation errors.
+
+I moved the project to Java 8, because I was having difficulties getting maven to
+work with Java 21. I will move the project back to Java 21 soon.
+
+The resources folder has been moved out of src/main/resources because maven was
+taking too long to compile with it in that directory. I think this is because
+it had to copy over all 2 GB of data each time it needed to compile. Having
+it in resources/ stops this slow compile time.
+
+I added a Makefile for the following commands:
+ - make clean  -> mvn clean
+ - make build  -> mvn install
+ - make run    -> runs the compiled jar file with built-in dependencies
+ - make        -> which runs "clean", "build" and then "run"
+
