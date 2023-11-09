@@ -12,8 +12,8 @@ public class Topic {
     public Topic(int number, String title, String description, String narrative) {
         this.number = number;
         this.title = title;
-        this.description = description;
-        this.narrative = narrative;
+        this.description = description.replaceAll("^Description:\\s*", "").trim();
+        this.narrative = narrative.replaceAll("^Narrative:\\s*", "").trim();
     }
 
     @Override
@@ -25,5 +25,4 @@ public class Topic {
                 ", narrative='" + narrative + '\'' +
                 '}';
     }
-
 }
