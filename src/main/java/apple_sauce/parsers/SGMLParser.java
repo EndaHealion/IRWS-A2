@@ -68,7 +68,8 @@ public class SGMLParser {
         } else {
             // Parse value between closing tag start: "</"
             int closeIndex = state.content.indexOf("</", state.i);
-            String value = state.content.substring(state.i, closeIndex - 1);
+            // changed this to closeIndex because closeIndex-1 didn't work for FT. Seems to still work for latimes too.
+            String value = state.content.substring(state.i, closeIndex);
             SGMLNode node = state.nodeStack.pop();
             node.value = value;
             node.value_is_children = false;
@@ -105,7 +106,6 @@ public class SGMLParser {
 
         SGMLParserState state = new SGMLParserState(content);
         state.nodeStack.push(root);
-
         while (state.i < state.content.length() && !state.nodeStack.empty()) {
             state = skipWhitespace(state);
             if (state.i >= state.content.length()) {

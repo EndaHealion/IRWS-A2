@@ -2,23 +2,31 @@ package apple_sauce;
 
 import java.util.ArrayList;
 
+import apple_sauce.models.FinancialTimesDoc;
 import apple_sauce.models.LATimesDoc;
 import apple_sauce.models.Topic;
-import apple_sauce.parsers.LATimesParser;
-import apple_sauce.parsers.SGMLNode;
-import apple_sauce.parsers.SGMLParser;
-import apple_sauce.parsers.TopicsParser;
+import apple_sauce.parsers.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
         // for (Topic topic : TopicsParser.parseTopics("resources/topics")) {
         // System.out.println(topic);
         // }
+        System.out.println("Starting parsing of LA Times...");
         ArrayList<LATimesDoc> laTimesDocs = LATimesParser.getDocInformation();
-        for (LATimesDoc d : laTimesDocs) {
+        System.out.println("LA Times finished parsing!");
+        System.out.println("Starting parsing of Financial Times...");
+        ArrayList<FinancialTimesDoc> ftDocs = FinancialTimesParser.getDocInformation();
+        System.out.println("Financial Times finished parsing!");
+
+        /*for (LATimesDoc d : laTimesDocs) {
+           d.print();
+           System.out.println();
+        }
+        for (FinancialTimesDoc d : ftDocs) {
             d.print();
             System.out.println();
-        }
+        }*/
         // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
         // root.print();
     }
