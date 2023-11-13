@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class LATimesParser {
     public static ArrayList<LATimesDoc> getDocInformation() throws Exception {
-        ArrayList<LATimesDoc> results = new ArrayList<LATimesDoc>();
+        ArrayList<LATimesDoc> documents = new ArrayList<LATimesDoc>();
 
-        String datasetDir = "resources/dataset/latimes";
+        String datasetDir = "resources/dataset/latimes/";
         File directory = new File(datasetDir);
         if (!directory.exists() || !directory.isDirectory()) {
             throw new Exception("Invalid LA Times dataset directory.");
@@ -23,8 +23,28 @@ public class LATimesParser {
                 continue;
             }
 
+            String filename = datasetDir + file.getName();
+            SGMLNode docRoot = SGMLParser.parseSGML(filename);
+            ArrayList<SGMLNode> sgmlDocs = docRoot.children;
+            for (SGMLNode c : sgmlDocs) {
+                ArrayList<SGMLNode> docValues = c.children;
+                SGMLNode docNoNode = SGMLParser.seekTag(docValues, "DOCNO");
+                SGMLNode dateNode = SGMLParser.seekTag(docValues, "DATE");
+                SGMLNode sectionNode = SGMLParser.seekTag(docValues, "SECTION");
+                SGMLNode headlineNode = SGMLParser.seekTag(docValues, "HEADLINE");
+                SGMLNode textNode = SGMLParser.seekTag(docValues, "TEXT");
+
+                String docNo = (docNoNode != null) ? docNoNode.toStringValue() : "";
+                String date = (dateNode != null) ? dateNode.toStringValue() : "";
+                String section = (sectionNode != null) ? sectionNode.toStringValue() : "";
+                String headline = (headlineNode != null) ? headlineNode.toStringValue() : "";
+                String text = (textNode != null) ? textNode.toStringValue() : "";
+
+                LATimesDoc doc = new LATimesDoc(filename, docNo, date, section, headline, text);
+                documents.add(doc);
+            }
         }
 
-        return results;
+        return documents;
     }
 }

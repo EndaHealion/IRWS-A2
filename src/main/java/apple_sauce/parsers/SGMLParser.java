@@ -88,6 +88,15 @@ public class SGMLParser {
         return state;
     }
 
+    public static SGMLNode seekTag(ArrayList<SGMLNode> nodes, String tag) {
+        for (SGMLNode n : nodes) {
+            if (n.tag.contentEquals(tag)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
     public static SGMLNode parseSGML(String filename) throws Exception {
         String content = readEntireFile(filename);
 

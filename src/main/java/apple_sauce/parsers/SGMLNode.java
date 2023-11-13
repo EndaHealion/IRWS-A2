@@ -40,6 +40,19 @@ public class SGMLNode {
         }
     }
 
+    public String toStringValue() {
+        StringBuilder builder = new StringBuilder();
+        if (this.value_is_children) {
+            for (SGMLNode c : this.children) {
+                String value = c.toStringValue();
+                builder.append(value + " ");
+            }
+        } else {
+            builder.append(this.value);
+        }
+        return builder.toString();
+    }
+
     public void print() {
         int indent = 0;
         this.printInternal(indent);

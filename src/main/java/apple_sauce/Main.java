@@ -1,5 +1,8 @@
 package apple_sauce;
 
+import java.util.ArrayList;
+
+import apple_sauce.models.LATimesDoc;
 import apple_sauce.models.Topic;
 import apple_sauce.parsers.LATimesParser;
 import apple_sauce.parsers.SGMLNode;
@@ -11,8 +14,12 @@ public class Main {
         // for (Topic topic : TopicsParser.parseTopics("resources/topics")) {
         // System.out.println(topic);
         // }
-        // LATimesParser.getDocInformation();
-        SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
-        root.print();
+        ArrayList<LATimesDoc> laTimesDocs = LATimesParser.getDocInformation();
+        for (LATimesDoc d : laTimesDocs) {
+            d.print();
+            System.out.println();
+        }
+        // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
+        // root.print();
     }
 }
