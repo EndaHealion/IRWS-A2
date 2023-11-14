@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import apple_sauce.models.FederalRegisterDoc;
 
 public class FRParser {
-
     public static String parseFRDoc(String filename, String content) {
         if (filename.contains("fr94")) {
             content = content.replaceAll("<!--.+-->", "");
@@ -44,7 +43,6 @@ public class FRParser {
 
                         SGMLNode docRoot = SGMLParser.parseSGML(content);
                         ArrayList<SGMLNode> sgmlDocs = docRoot.children;
-
                         for (SGMLNode c : sgmlDocs) {
                             ArrayList<SGMLNode> docValues = c.children;
                             SGMLNode docNoNode = SGMLParser.seekTag(docValues, "DOCNO");

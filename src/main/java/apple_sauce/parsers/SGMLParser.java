@@ -46,9 +46,10 @@ public class SGMLParser {
     private static SGMLParserState parseOpen(SGMLParserState state) {
         state = skipWhitespace(state);
         int closeIndex = state.content.indexOf('>', state.i);
-        String openTags[] = state.content.substring(state.i + 1, closeIndex).split("\\s+");
+        String openTagWithAttribs = state.content.substring(state.i + 1, closeIndex);
+        String openTags[] = openTagWithAttribs.split("\\s+");
         String openTag = openTags[0];
-        state.i += 2 + openTag.length();
+        state.i += 2 + openTagWithAttribs.length();
         SGMLNode root = state.nodeStack.pop();
         SGMLNode node = new SGMLNode(openTag, "");
         root.children.add(node);
@@ -60,22 +61,30 @@ public class SGMLParser {
 
     private static SGMLParserState parseValue(SGMLParserState state) {
         state = skipWhitespace(state);
-        if (state.content.charAt(state.i) == '<') {
-            SGMLNode node = state.nodeStack.pop();
-            node.value_is_children = true;
-            node.children = new ArrayList<>();
-            state.nodeStack.push(node);
-        } else {
-            // Parse value between closing tag start: "</"
-            int closeIndex = state.content.indexOf("</", state.i);
-            // changed this to closeIndex because closeIndex-1 didn't work for FT. Seems to
-            // still work for latimes too.
-            String value = state.content.substring(state.i, closeIndex);
-            SGMLNode node = state.nodeStack.pop();
-            node.value = value;
-            node.value_is_children = false;
-            state.nodeStack.push(node);
-            state.i += value.length();
+        String openTag = state.nodeStack.peek().tag;
+        String closeTag = "</" + openTag + ">";
+
+        // Keep parsing values until we find the close tag.
+        while (!state.content.startsWith(closeTag, state.i)) {
+            if (state.content.charAt(state.i) == '<') {
+                state = parseOpen(state);
+                state = parseValue(state);
+                state = parseClose(state);
+            } else {
+                // Parse until start of text tag.
+                int closeIndex = state.content.indexOf("<", state.i);
+                String value = state.content.substring(state.i, closeIndex);
+                SGMLNode node = state.nodeStack.pop();
+                if (node.value_is_children) {
+                    SGMLNode valueNode = new SGMLNode("", value);
+                    node.children.add(valueNode);
+                } else {
+                    node.value = value;
+                }
+                state.nodeStack.push(node);
+                state.i += value.length();
+            }
+            state = skipWhitespace(state);
         }
         return state;
     }
@@ -110,15 +119,9 @@ public class SGMLParser {
             if (state.i >= state.content.length()) {
                 break; // Stop at EOF.
             }
-            if (state.content.charAt(state.i) == '<') {
-                if (state.content.charAt(state.i + 1) == '/') {
-                    state = parseClose(state);
-                } else {
-                    state = parseOpen(state);
-                }
-            } else {
-                state = parseValue(state);
-            }
+            state = parseOpen(state);
+            state = parseValue(state);
+            state = parseClose(state);
         }
 
         return root;
