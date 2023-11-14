@@ -2,6 +2,7 @@ package apple_sauce;
 
 import java.util.ArrayList;
 
+import apple_sauce.models.FBISDoc;
 import apple_sauce.models.FederalRegisterDoc;
 import apple_sauce.models.FinancialTimesDoc;
 import apple_sauce.models.LATimesDoc;
@@ -21,7 +22,14 @@ public class Main {
         System.out.println("Financial Times finished parsing!");
         ArrayList<FederalRegisterDoc> frDocs = FRParser.getDocInformation();
         System.out.println("Federal Register finished parsing!");
+        System.out.println("Starting parsing of FBIS...");
+        ArrayList<FBISDoc> fbisDocs = FBISParser.getDocInformation();
+        System.out.println("FBIS finished parsing!");
 
+//        for (FBISDoc d : fbisDocs) {
+//            d.print();
+//            System.out.println();
+//        }
         // for (LATimesDoc d : laTimesDocs) {
         // d.print();
         // System.out.println();

@@ -3,6 +3,7 @@ package apple_sauce.parsers;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
 
 class SGMLParserState {
@@ -125,6 +126,19 @@ public class SGMLParser {
         }
 
         return root;
+    }
+
+    public static List<SGMLNode> seekAllTags(ArrayList<SGMLNode> nodes, String tag) {
+        List<SGMLNode> foundNodes = new ArrayList<>();
+        for (SGMLNode n : nodes) {
+            if (n.tag.equalsIgnoreCase(tag)) {
+                foundNodes.add(n);
+            }
+            if (!n.children.isEmpty()) {
+                foundNodes.addAll(seekAllTags(n.children, tag));
+            }
+        }
+        return foundNodes;
     }
 
 }
