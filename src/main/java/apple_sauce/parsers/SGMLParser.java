@@ -100,6 +100,8 @@ public class SGMLParser {
 
     public static SGMLNode parseSGML(String filename) throws Exception {
         String content = readEntireFile(filename);
+        
+        content = FRParser.parseFRDoc(filename, content);
 
         SGMLNode root = new SGMLNode("root", "");
         root.value_is_children = true;

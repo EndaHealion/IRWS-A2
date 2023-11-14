@@ -2,9 +2,10 @@ package apple_sauce;
 
 import java.util.ArrayList;
 
+import apple_sauce.models.FederalRegisterDoc;
 import apple_sauce.models.FinancialTimesDoc;
 import apple_sauce.models.LATimesDoc;
-import apple_sauce.models.Topic;
+// import apple_sauce.models.Topic;
 import apple_sauce.parsers.*;
 
 public class Main {
@@ -18,6 +19,8 @@ public class Main {
         System.out.println("Starting parsing of Financial Times...");
         ArrayList<FinancialTimesDoc> ftDocs = FinancialTimesParser.getDocInformation();
         System.out.println("Financial Times finished parsing!");
+        ArrayList<FederalRegisterDoc> frDocs = FRParser.getDocInformation();
+        System.out.println("Federal Register finished parsing!");
 
         /*for (LATimesDoc d : laTimesDocs) {
            d.print();
@@ -27,6 +30,10 @@ public class Main {
             d.print();
             System.out.println();
         }*/
+        // for (FederalRegisterDoc d : frDocs) {
+        //     d.print();
+        //     System.out.println();
+        // }
         // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
         // root.print();
     }
