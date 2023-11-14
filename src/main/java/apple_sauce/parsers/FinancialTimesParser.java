@@ -28,7 +28,8 @@ public class FinancialTimesParser {
                         }
 
                         String filename = subDirectory.getPath() + "/" + file.getName();
-                        SGMLNode docRoot = SGMLParser.parseSGML(filename);
+                        String content = SGMLParser.readEntireFile(filename);
+                        SGMLNode docRoot = SGMLParser.parseSGML(content);
                         ArrayList<SGMLNode> sgmlDocs = docRoot.children;
 
                         for (SGMLNode c : sgmlDocs) {

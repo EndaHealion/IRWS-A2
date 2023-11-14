@@ -24,7 +24,7 @@ class SGMLParserState {
 }
 
 public class SGMLParser {
-    private static String readEntireFile(String filename) throws Exception {
+    public static String readEntireFile(String filename) throws Exception {
         StringBuilder content = new StringBuilder();
         BufferedReader reader = new BufferedReader(new FileReader(filename));
         String line = reader.readLine();
@@ -68,7 +68,8 @@ public class SGMLParser {
         } else {
             // Parse value between closing tag start: "</"
             int closeIndex = state.content.indexOf("</", state.i);
-            // changed this to closeIndex because closeIndex-1 didn't work for FT. Seems to still work for latimes too.
+            // changed this to closeIndex because closeIndex-1 didn't work for FT. Seems to
+            // still work for latimes too.
             String value = state.content.substring(state.i, closeIndex);
             SGMLNode node = state.nodeStack.pop();
             node.value = value;
@@ -98,11 +99,7 @@ public class SGMLParser {
         return null;
     }
 
-    public static SGMLNode parseSGML(String filename) throws Exception {
-        String content = readEntireFile(filename);
-        
-        content = FRParser.parseFRDoc(filename, content);
-
+    public static SGMLNode parseSGML(String content) throws Exception {
         SGMLNode root = new SGMLNode("root", "");
         root.value_is_children = true;
 

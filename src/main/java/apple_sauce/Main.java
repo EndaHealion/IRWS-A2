@@ -22,17 +22,17 @@ public class Main {
         ArrayList<FederalRegisterDoc> frDocs = FRParser.getDocInformation();
         System.out.println("Federal Register finished parsing!");
 
-        /*for (LATimesDoc d : laTimesDocs) {
-           d.print();
-           System.out.println();
-        }
-        for (FinancialTimesDoc d : ftDocs) {
-            d.print();
-            System.out.println();
-        }*/
+        // for (LATimesDoc d : laTimesDocs) {
+        // d.print();
+        // System.out.println();
+        // }
+        // for (FinancialTimesDoc d : ftDocs) {
+        // d.print();
+        // System.out.println();
+        // }
         // for (FederalRegisterDoc d : frDocs) {
-        //     d.print();
-        //     System.out.println();
+        // d.print();
+        // System.out.println();
         // }
         // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
         // root.print();

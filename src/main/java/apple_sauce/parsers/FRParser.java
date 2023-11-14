@@ -12,8 +12,7 @@ public class FRParser {
             content = content.replaceAll("<!--.+-->", "");
             content = content.replaceAll("&.+;", "").replaceAll("(?m)^[ \t]*\n", "");
             return content;
-        }
-        else {
+        } else {
             return content;
         }
     }
@@ -40,7 +39,10 @@ public class FRParser {
                         }
 
                         String filename = subDirectory.getPath() + "/" + file.getName();
-                        SGMLNode docRoot = SGMLParser.parseSGML(filename);
+                        String content = SGMLParser.readEntireFile(filename);
+                        content = parseFRDoc(filename, content);
+
+                        SGMLNode docRoot = SGMLParser.parseSGML(content);
                         ArrayList<SGMLNode> sgmlDocs = docRoot.children;
 
                         for (SGMLNode c : sgmlDocs) {

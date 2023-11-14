@@ -24,7 +24,8 @@ public class LATimesParser {
             }
 
             String filename = datasetDir + file.getName();
-            SGMLNode docRoot = SGMLParser.parseSGML(filename);
+            String content = SGMLParser.readEntireFile(filename);
+            SGMLNode docRoot = SGMLParser.parseSGML(content);
             ArrayList<SGMLNode> sgmlDocs = docRoot.children;
             for (SGMLNode c : sgmlDocs) {
                 ArrayList<SGMLNode> docValues = c.children;
