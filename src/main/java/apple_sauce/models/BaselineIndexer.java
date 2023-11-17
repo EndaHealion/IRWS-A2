@@ -24,6 +24,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import apple_sauce.Util;
+import apple_sauce.eNums.AnalyzerType;
+import apple_sauce.eNums.SimilarityType;
 
 // NOTE:
 // Baseline Analyser is StandardAnalyzer
@@ -42,7 +44,7 @@ public class BaselineIndexer {
     }
 
     public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
-            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs) throws Exception {
+            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
         ArrayList<Document> documents = new ArrayList<Document>();
 
         Util.printInfo("Creating index...");
@@ -62,8 +64,10 @@ public class BaselineIndexer {
         }
 
         // Configure index writier.
-        Analyzer analyzer = new StandardAnalyzer();
-        Similarity similarity = new ClassicSimilarity();
+//        Analyzer analyzer = new StandardAnalyzer();
+//        Similarity similarity = new ClassicSimilarity();
+        Analyzer analyzer = analyzerEnum.getAnalyzer();
+        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -80,11 +84,13 @@ public class BaselineIndexer {
         Util.printInfo("Finished creating index.");
     }
 
-    public static void queryIndex(List<Topic> topics) throws Exception {
+    public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
-        Analyzer analyzer = new StandardAnalyzer();
-        Similarity similarity = new ClassicSimilarity();
+        // Analyzer analyzer = new StandardAnalyzer();
+        // Similarity similarity = new ClassicSimilarity();
+        Analyzer analyzer = analyzerEnum.getAnalyzer();
+        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         DirectoryReader ireader = DirectoryReader.open(indexDir);
         IndexSearcher isearcher = new IndexSearcher(ireader);
@@ -121,7 +127,7 @@ public class BaselineIndexer {
         }
 
         // Write results to file.
-        BufferedWriter writer = new BufferedWriter(new FileWriter(EVALUATION_RESULT_PATH));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_PATH));
         for (String line : results) {
             writer.write(line);
             writer.newLine();
