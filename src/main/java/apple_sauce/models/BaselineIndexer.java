@@ -32,7 +32,8 @@ import apple_sauce.eNums.SimilarityType;
 // Baseline Similarity is ClassicSimilarity
 public class BaselineIndexer {
     public static final String INDEX_PATH = "index";
-    public static final String EVALUATION_RESULT_PATH = "eval_results.txt";
+    public static final String OUTPUT_PATH = "output/";
+    public static final String EVALUATION_RESULT_NAME = "eval_results.txt";
     public static final int MAX_QUERY_RESULTS = 1000;
 
     private static String topicToQueryString(Topic t) {
@@ -43,8 +44,10 @@ public class BaselineIndexer {
         return builder.toString();
     }
 
+//    public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
+//            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
     public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
-            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+                                   ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs) throws Exception {
         ArrayList<Document> documents = new ArrayList<Document>();
 
         Util.printInfo("Creating index...");
@@ -64,10 +67,10 @@ public class BaselineIndexer {
         }
 
         // Configure index writier.
-//        Analyzer analyzer = new StandardAnalyzer();
-//        Similarity similarity = new ClassicSimilarity();
-        Analyzer analyzer = analyzerEnum.getAnalyzer();
-        Similarity similarity = similarityEnum.getSimilarity();
+        Analyzer analyzer = new StandardAnalyzer();
+        Similarity similarity = new ClassicSimilarity();
+//        Analyzer analyzer = analyzerEnum.getAnalyzer();
+//        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -84,13 +87,14 @@ public class BaselineIndexer {
         Util.printInfo("Finished creating index.");
     }
 
-    public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+//    public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+    public static void queryIndex(List<Topic> topics) throws Exception {
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
-        // Analyzer analyzer = new StandardAnalyzer();
-        // Similarity similarity = new ClassicSimilarity();
-        Analyzer analyzer = analyzerEnum.getAnalyzer();
-        Similarity similarity = similarityEnum.getSimilarity();
+        Analyzer analyzer = new StandardAnalyzer();
+        Similarity similarity = new ClassicSimilarity();
+//        Analyzer analyzer = analyzerEnum.getAnalyzer();
+//        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         DirectoryReader ireader = DirectoryReader.open(indexDir);
         IndexSearcher isearcher = new IndexSearcher(ireader);
@@ -122,12 +126,15 @@ public class BaselineIndexer {
                 resultBuilder.append(" " + (i + 1) + " ");
                 resultBuilder.append(hits[i].score);
                 resultBuilder.append(" STANDARD");
+//                resultBuilder.append(" " + similarityEnum.getName());
                 results.add(resultBuilder.toString());
             }
         }
 
         // Write results to file.
-        BufferedWriter writer = new BufferedWriter(new FileWriter(analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_PATH));
+//        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + "baseline_StandardAnalyzer_ClassicSimilarity_" + EVALUATION_RESULT_NAME));
+
         for (String line : results) {
             writer.write(line);
             writer.newLine();

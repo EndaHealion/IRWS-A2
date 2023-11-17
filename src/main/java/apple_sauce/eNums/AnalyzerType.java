@@ -62,14 +62,4 @@ public enum AnalyzerType {
     public String getName() {
         return name;
     }
-//    public static Analyzer getAnalyzerByChoice(int choice) {
-//        for (AnalyzerType type : values()) {
-//            if (type.choice == choice) {
-//                System.out.println("Selected " + type.name);
-//                return type.analyzer;
-//            }
-//        }
-//        System.out.println("Default selected - Standard Analyzer");
-//        return STANDARD.analyzer;
-//    }
 }

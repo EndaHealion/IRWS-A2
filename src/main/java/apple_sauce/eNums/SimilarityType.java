@@ -5,8 +5,8 @@ import org.apache.lucene.search.similarities.*;
 import java.util.Scanner;
 
 public enum SimilarityType {
-    BM25(1, new BM25Similarity(), "BM25"),
-    CLASSIC(2, new ClassicSimilarity(), "Classic (VSM)"),
+    CLASSIC(1, new ClassicSimilarity(), "Classic (VSM)"),
+    BM25(2, new BM25Similarity(), "BM25"),
     BOOLEAN(3, new BooleanSimilarity(), "Boolean"),
     LMDIRICHLET(4, new LMDirichletSimilarity(), "LMDirichlet"),
     IBS(5, new IBSimilarity(new DistributionLL(), new LambdaDF(), new NormalizationH1()) , "IBS");
@@ -25,8 +25,8 @@ public enum SimilarityType {
     public static SimilarityType getSimilarityTypeByChoice() {
         try (Scanner scanner = new Scanner(System.in)) {
             System.out.println("Please select the type of Similarity:\n" +
-                    "1. BM25\n" +
-                    "2. Classic (VSM)\n" +
+                    "1. Classic (VSM)\n" +
+                    "2. BM25\n" +
                     "3. Boolean\n" +
                     "4. LMDirichlet\n" +
                     "5. IBS");
@@ -56,8 +56,8 @@ public enum SimilarityType {
             }
         }
 
-        System.out.println("Default selected - BM25 for scoring.");
-        return BM25;
+        System.out.println("Default selected - Classic (VSM) for scoring.");
+        return CLASSIC;
     }
 
     public Similarity getSimilarity() {
