@@ -9,7 +9,7 @@ build:
 	mvn install
 
 run:
-	java -cp target/apple_sauce-1.0-jar-with-dependencies.jar apple_sauce.Main
+	java -Xmx4g -cp target/apple_sauce-1.0-jar-with-dependencies.jar apple_sauce.Main
 
 clean:
 	mvn clean

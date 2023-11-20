@@ -1,35 +1,45 @@
 package apple_sauce;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import apple_sauce.models.BaselineIndexer;
 import apple_sauce.models.FBISDoc;
 import apple_sauce.models.FederalRegisterDoc;
 import apple_sauce.models.FinancialTimesDoc;
 import apple_sauce.models.LATimesDoc;
-// import apple_sauce.models.Topic;
+import apple_sauce.models.Topic;
 import apple_sauce.parsers.*;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        // for (Topic topic : TopicsParser.parseTopics("resources/topics")) {
-        // System.out.println(topic);
-        // }
-        System.out.println("Starting parsing of LA Times...");
-        ArrayList<LATimesDoc> laTimesDocs = LATimesParser.getDocInformation();
-        System.out.println("LA Times finished parsing!");
-        System.out.println("Starting parsing of Financial Times...");
-        ArrayList<FinancialTimesDoc> ftDocs = FinancialTimesParser.getDocInformation();
-        System.out.println("Financial Times finished parsing!");
-        ArrayList<FederalRegisterDoc> frDocs = FRParser.getDocInformation();
-        System.out.println("Federal Register finished parsing!");
-        System.out.println("Starting parsing of FBIS...");
-        ArrayList<FBISDoc> fbisDocs = FBISParser.getDocInformation();
-        System.out.println("FBIS finished parsing!");
+        Util.printInfo("Parsing topics...");
+        List<Topic> topics = TopicsParser.parseTopics("resources/topics");
+        Util.printInfo("Topics finished parsing!");
 
-//        for (FBISDoc d : fbisDocs) {
-//            d.print();
-//            System.out.println();
-//        }
+        Util.printInfo("Parsing LA Times documents...");
+        ArrayList<LATimesDoc> laTimesDocs = LATimesParser.getDocInformation();
+        Util.printInfo("LA Times finished parsing!");
+
+        Util.printInfo("Parsing Financial Times documents...");
+        ArrayList<FinancialTimesDoc> ftDocs = FinancialTimesParser.getDocInformation();
+        Util.printInfo("Financial Times finished parsing!");
+
+        Util.printInfo("Parsing Federal Register documents...");
+        ArrayList<FederalRegisterDoc> frDocs = FRParser.getDocInformation();
+        Util.printInfo("Federal Register finished parsing!");
+
+        Util.printInfo("Parsing FBIS documents...");
+        ArrayList<FBISDoc> fbisDocs = FBISParser.getDocInformation();
+        Util.printInfo("FBIS finished parsing!");
+
+        BaselineIndexer.createIndex(fbisDocs, frDocs, ftDocs, laTimesDocs);
+        BaselineIndexer.queryIndex(topics);
+
+        // for (FBISDoc d : fbisDocs) {
+        // d.print();
+        // System.out.println();
+        // }
         // for (LATimesDoc d : laTimesDocs) {
         // d.print();
         // System.out.println();

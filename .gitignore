@@ -6,6 +6,7 @@ target/
 ### Ignored because files are too big (2 GB)
 src/main/resources/dataset/
 resources/
+index/
 
 ### IntelliJ IDEA ###
 .idea/
