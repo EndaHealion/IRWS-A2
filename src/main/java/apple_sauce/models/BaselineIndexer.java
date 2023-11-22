@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -18,6 +19,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
@@ -66,9 +68,9 @@ public class BaselineIndexer {
             documents.add(d.toDocument());
         }
 
-        // Configure index writier.
-        Analyzer analyzer = new StandardAnalyzer();
-        Similarity similarity = new ClassicSimilarity();
+        // Configure index writer.
+        Analyzer analyzer = new EnglishAnalyzer();
+        Similarity similarity = new BM25Similarity();
 //        Analyzer analyzer = analyzerEnum.getAnalyzer();
 //        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
@@ -91,8 +93,8 @@ public class BaselineIndexer {
     public static void queryIndex(List<Topic> topics) throws Exception {
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
-        Analyzer analyzer = new StandardAnalyzer();
-        Similarity similarity = new ClassicSimilarity();
+        Analyzer analyzer = new EnglishAnalyzer();
+        Similarity similarity = new BM25Similarity();
 //        Analyzer analyzer = analyzerEnum.getAnalyzer();
 //        Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
@@ -133,7 +135,7 @@ public class BaselineIndexer {
 
         // Write results to file.
 //        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + "baseline_StandardAnalyzer_ClassicSimilarity_" + EVALUATION_RESULT_NAME));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + "baseline_EnglishAnalyzer_BM25Similarity_" + EVALUATION_RESULT_NAME));
 
         for (String line : results) {
             writer.write(line);
