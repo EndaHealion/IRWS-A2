@@ -1,18 +1,14 @@
 package apple_sauce;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
-import apple_sauce.eNums.*;
 import apple_sauce.models.*;
 import apple_sauce.parsers.*;
 
-public class Main {
-    private static final Scanner scanner = new Scanner(System.in);
+import java.util.ArrayList;
+import java.util.List;
+
+public class Baseline {
+
     public static void main(String[] args) throws Exception {
-        AnalyzerType analyzerEnum = AnalyzerType.getAnalyzerTypeByChoice(scanner);
-        SimilarityType similarityEnum = SimilarityType.getSimilarityTypeByChoice(scanner);
 
         Util.printInfo("Parsing topics...");
         List<Topic> topics = TopicsParser.parseTopics("resources/topics");
@@ -34,7 +30,26 @@ public class Main {
         ArrayList<FBISDoc> fbisDocs = FBISParser.getDocInformation();
         Util.printInfo("FBIS finished parsing!");
 
-        CustomIndexer.createIndex(fbisDocs, frDocs, ftDocs, laTimesDocs, analyzerEnum, similarityEnum);
-        CustomIndexer.queryIndex(topics, analyzerEnum, similarityEnum);
+        BaselineIndexer.createIndex(fbisDocs, frDocs, ftDocs, laTimesDocs);
+        BaselineIndexer.queryIndex(topics);
+
+        // for (FBISDoc d : fbisDocs) {
+        // d.print();
+        // System.out.println();
+        // }
+        // for (LATimesDoc d : laTimesDocs) {
+        // d.print();
+        // System.out.println();
+        // }
+        // for (FinancialTimesDoc d : ftDocs) {
+        // d.print();
+        // System.out.println();
+        // }
+        // for (FederalRegisterDoc d : frDocs) {
+        // d.print();
+        // System.out.println();
+        // }
+        // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
+        // root.print();
     }
 }

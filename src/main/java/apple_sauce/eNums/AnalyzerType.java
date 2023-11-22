@@ -1,9 +1,12 @@
 package apple_sauce.eNums;
 
+import apple_sauce.Util;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public enum AnalyzerType {
@@ -20,39 +23,29 @@ public enum AnalyzerType {
         this.name = name;
     }
 
-    public static AnalyzerType getAnalyzerTypeByChoice() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Please select the type of Analyzer:\n" +
-                    "1. Standard Analyzer\n" +
-                    "2. English Analyzer");
+    public static AnalyzerType getAnalyzerTypeByChoice(Scanner scanner) {
+        Util.printInfo("Please select the type of Analyzer:\n" +
+                "1. Standard Analyzer\n" +
+                "2. English Analyzer");
 
-            int choice = 0;
-            boolean validChoice = false;
-
-            while (!validChoice) {
-                if (scanner.hasNextInt()) {
-                    choice = scanner.nextInt();
-                    if (choice == 1 || choice == 2) {
-                        validChoice = true;
-                    } else {
-                        System.out.println("Invalid choice. Please enter 1 or 2.");
+        while (true) {
+            try {
+                int choice = scanner.nextInt();
+                if (choice == 1 || choice == 2) {
+                    for (AnalyzerType type : values()) {
+                        if (type.choice == choice) {
+                            Util.printInfo("Selected " + type.name);
+                            return type;
+                        }
                     }
                 } else {
-                    System.out.println("Invalid input. Please enter a number.");
-                    scanner.next();
+                    Util.printError("Invalid choice. Please enter 1 or 2.");
                 }
-            }
-
-            for (AnalyzerType type : values()) {
-                if (type.choice == choice) {
-                    System.out.println("Selected " + type.name);
-                    return type;
-                }
+            } catch (InputMismatchException e) {
+                Util.printError("Invalid input. Please enter a number.");
+                scanner.next();
             }
         }
-
-        System.out.println("Default selected - Standard Analyzer");
-        return STANDARD;
     }
 
     public Analyzer getAnalyzer() {
