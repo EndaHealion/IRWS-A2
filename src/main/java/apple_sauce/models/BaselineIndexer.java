@@ -16,22 +16,22 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 
 import apple_sauce.Util;
 import apple_sauce.eNums.AnalyzerType;
 import apple_sauce.eNums.SimilarityType;
 
-// NOTE:
-// Baseline Analyser is StandardAnalyzer
-// Baseline Similarity is ClassicSimilarity
 public class BaselineIndexer {
     public static final String INDEX_PATH = "index";
     public static final String OUTPUT_PATH = "output/";
@@ -46,10 +46,8 @@ public class BaselineIndexer {
         return builder.toString();
     }
 
-//    public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
-//            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
     public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
-                                   ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs) throws Exception {
+            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs) throws Exception {
         ArrayList<Document> documents = new ArrayList<Document>();
 
         Util.printInfo("Creating index...");
@@ -71,8 +69,8 @@ public class BaselineIndexer {
         // Configure index writer.
         Analyzer analyzer = new EnglishAnalyzer();
         Similarity similarity = new BM25Similarity();
-//        Analyzer analyzer = analyzerEnum.getAnalyzer();
-//        Similarity similarity = similarityEnum.getSimilarity();
+        // Analyzer analyzer = analyzerEnum.getAnalyzer();
+        // Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -89,33 +87,43 @@ public class BaselineIndexer {
         Util.printInfo("Finished creating index.");
     }
 
-//    public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+    // public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum,
+    // SimilarityType similarityEnum) throws Exception {
     public static void queryIndex(List<Topic> topics) throws Exception {
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
         Analyzer analyzer = new EnglishAnalyzer();
         Similarity similarity = new BM25Similarity();
-//        Analyzer analyzer = analyzerEnum.getAnalyzer();
-//        Similarity similarity = similarityEnum.getSimilarity();
+        // Analyzer analyzer = analyzerEnum.getAnalyzer();
+        // Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         DirectoryReader ireader = DirectoryReader.open(indexDir);
         IndexSearcher isearcher = new IndexSearcher(ireader);
         isearcher.setSimilarity(similarity);
 
         // Setup query parser.
-
         String[] searchFields = new String[] {
                 "DATE", "SECTION",
                 "HEADLINE", "TEXT",
                 "TITLES", "AUTHOR",
                 "HEADER TAG"
         };
-        MultiFieldQueryParser parser = new MultiFieldQueryParser(searchFields, analyzer);
 
         // Iterate over all topics and query the index.
+        HashMap<String, Float> fieldWeights = new HashMap<String, Float>();
+        fieldWeights.put("DATE", 1.0f);
+        fieldWeights.put("SECTION", 1.0f);
+        fieldWeights.put("HEADLINE", 1.0f);
+        fieldWeights.put("TEXT", 18.0f);
+        fieldWeights.put("TITLES", 0.0f);
+        fieldWeights.put("AUTHOR", 1.0f);
+        fieldWeights.put("HEADER TAG", 1.0f);
+        MultiFieldQueryParser parser = new MultiFieldQueryParser(searchFields, analyzer, fieldWeights);
+
         ArrayList<String> results = new ArrayList<String>();
         for (Topic topic : topics) {
-            Query query = parser.parse(QueryParser.escape(topicToQueryString(topic)));
+            String queryString = QueryParser.escape(topicToQueryString(topic));
+            Query query = parser.parse(queryString);
             ScoreDoc[] hits = isearcher.search(query, MAX_QUERY_RESULTS).scoreDocs;
 
             // Gather scores of results results.
@@ -128,14 +136,14 @@ public class BaselineIndexer {
                 resultBuilder.append(" " + (i + 1) + " ");
                 resultBuilder.append(hits[i].score);
                 resultBuilder.append(" STANDARD");
-//                resultBuilder.append(" " + similarityEnum.getName());
+                // resultBuilder.append(" " + similarityEnum.getName());
                 results.add(resultBuilder.toString());
             }
         }
 
         // Write results to file.
-//        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + "baseline_EnglishAnalyzer_BM25Similarity_" + EVALUATION_RESULT_NAME));
+        String outputPath = OUTPUT_PATH + "baseline_EnglishAnalyzer_BM25Similarity_" + EVALUATION_RESULT_NAME;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));
 
         for (String line : results) {
             writer.write(line);

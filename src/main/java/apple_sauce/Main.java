@@ -35,24 +35,5 @@ public class Main {
 
         BaselineIndexer.createIndex(fbisDocs, frDocs, ftDocs, laTimesDocs);
         BaselineIndexer.queryIndex(topics);
-
-        // for (FBISDoc d : fbisDocs) {
-        // d.print();
-        // System.out.println();
-        // }
-        // for (LATimesDoc d : laTimesDocs) {
-        // d.print();
-        // System.out.println();
-        // }
-        // for (FinancialTimesDoc d : ftDocs) {
-        // d.print();
-        // System.out.println();
-        // }
-        // for (FederalRegisterDoc d : frDocs) {
-        // d.print();
-        // System.out.println();
-        // }
-        // SGMLNode root = SGMLParser.parseSGML("resources/dataset/latimes/la011890");
-        // root.print();
     }
 }

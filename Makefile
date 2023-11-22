@@ -3,7 +3,7 @@
 
 .DEFAULT_GOAL := all
 
-all: build run
+all: clean build run
 
 build:
 	mvn install
