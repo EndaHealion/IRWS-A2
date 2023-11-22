@@ -12,7 +12,7 @@ import apple_sauce.parsers.*;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws Exception {
-        Util.printInfo(new File(".").getAbsolutePath());
+        Util.printInfo("Running Apple Sauce in directory: " + new File(".").getAbsolutePath());
         AnalyzerType analyzerEnum = AnalyzerType.getAnalyzerTypeByChoice(scanner);
         SimilarityType similarityEnum = SimilarityType.getSimilarityTypeByChoice(scanner);
         scanner.close();

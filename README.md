@@ -18,6 +18,31 @@ Current list of dependencies:
 Before building and running, you must first place the dataset folder in src/main/resources/ directory. When you download it from the Google Drive it will be called "Assignment 2", but it should be renmaed to "dataset". Inside this "dataset" folder should be the following folders: "dtds", "fbis", "fr94", "ft", "latimes".
 This folder has not been added to the GitHub repo because of size limitations.
 
+### Before Running
+You need to download and unzip the dataset from the Google Drive. The link is here: 
+```bash
+https://drive.google.com/file/d/17KpMCaE34eLvdiTINqj1lmxSBSu8BtDP
+```
+To download it from the command line, firstly you need to install ```pip```,```gdown``` and ```unzip```:
+```bash
+sudo apt install python3-pip
+pip install gdown
+sudo apt install unzip
+```
+If ```gdown``` is not added to ```PATH```, then you need to source it:
+```bash
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+Then run the following command:
+
+```bash
+chmod +x dataset.sh
+./dataset.sh
+```
+This will download the dataset and unzip it into the correct directory.
+
 ### Commands
 There is a Makefile which has the following options:
 
@@ -30,6 +55,11 @@ make (This runs "clean", "build" and then "run" in order)
 
 ### Trec Eval
 To run trec eval, you must first run the program and generate the results file. Then you can run the following command:
+
+Download trec_eval from Github
+```bash
+git clone https://github.com/usnistgov/trec_eval.git
+```
 
 Go to the trec_eval directory
 ```bash
