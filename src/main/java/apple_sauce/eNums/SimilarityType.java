@@ -1,7 +1,10 @@
 package apple_sauce.eNums;
 
+import apple_sauce.Util;
 import org.apache.lucene.search.similarities.*;
 
+import java.util.InputMismatchException;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public enum SimilarityType {
@@ -22,42 +25,32 @@ public enum SimilarityType {
         this.name = name;
     }
 
-    public static SimilarityType getSimilarityTypeByChoice() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.println("Please select the type of Similarity:\n" +
-                    "1. Classic (VSM)\n" +
-                    "2. BM25\n" +
-                    "3. Boolean\n" +
-                    "4. LMDirichlet\n" +
-                    "5. IBS");
+    public static SimilarityType getSimilarityTypeByChoice(Scanner scanner) {
+        Util.printInfo("Please select the type of Similarity:\n" +
+                "1. Classic (VSM)\n" +
+                "2. BM25\n" +
+                "3. Boolean\n" +
+                "4. LMDirichlet\n" +
+                "5. IBS");
 
-            int choice = 0;
-            boolean validChoice = false;
-
-            while (!validChoice) {
-                if (scanner.hasNextInt()) {
-                    choice = scanner.nextInt();
-                    if (choice >= 1 && choice <= 5) {
-                        validChoice = true;
-                    } else {
-                        System.out.println("Invalid choice. Please enter a number between 1 and 5.");
+        while (true) {
+            try {
+                int choice = scanner.nextInt();
+                if (choice >= 1 && choice <= 5) {
+                    for (SimilarityType type : values()) {
+                        if (type.choice == choice) {
+                            Util.printInfo("Selected " + type.name + " for scoring.");
+                            return type;
+                        }
                     }
                 } else {
-                    System.out.println("Invalid input. Please enter a number.");
-                    scanner.next();
+                    Util.printError("Invalid choice. Please enter a number between 1 and 5.");
                 }
-            }
-
-            for (SimilarityType type : values()) {
-                if (type.choice == choice) {
-                    System.out.println("Selected " + type.name + " for scoring.");
-                    return type;
-                }
+            } catch (InputMismatchException e) {
+                Util.printError("Invalid input. Please enter a number.");
+                scanner.next();
             }
         }
-
-        System.out.println("Default selected - Classic (VSM) for scoring.");
-        return CLASSIC;
     }
 
     public Similarity getSimilarity() {
