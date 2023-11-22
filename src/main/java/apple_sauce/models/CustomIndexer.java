@@ -4,10 +4,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
@@ -17,7 +17,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.similarities.BM25Similarity;
 import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -97,12 +96,22 @@ public class CustomIndexer {
                 "TITLES", "AUTHOR",
                 "HEADER TAG"
         };
-        MultiFieldQueryParser parser = new MultiFieldQueryParser(searchFields, analyzer);
+
+        HashMap<String, Float> fieldWeights = new HashMap<String, Float>();
+        fieldWeights.put("DATE", 1.0f);
+        fieldWeights.put("SECTION", 1.0f);
+        fieldWeights.put("HEADLINE", 1.0f);
+        fieldWeights.put("TEXT", 18.0f);
+        fieldWeights.put("TITLES", 0.0f);
+        fieldWeights.put("AUTHOR", 1.0f);
+        fieldWeights.put("HEADER TAG", 1.0f);
+        MultiFieldQueryParser parser = new MultiFieldQueryParser(searchFields, analyzer, fieldWeights);
 
         // Iterate over all topics and query the index.
         ArrayList<String> results = new ArrayList<String>();
         for (Topic topic : topics) {
-            Query query = parser.parse(QueryParser.escape(topicToQueryString(topic)));
+            String queryString = QueryParser.escape(topicToQueryString(topic));
+            Query query = parser.parse(queryString);
             ScoreDoc[] hits = isearcher.search(query, MAX_QUERY_RESULTS).scoreDocs;
 
             // Gather scores of results results.
@@ -120,8 +129,8 @@ public class CustomIndexer {
         }
 
         // Write results to file.
-        BufferedWriter writer = new BufferedWriter(new FileWriter(OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME));
-        for (String line : results) {
+        String outputPath = OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME;
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));        for (String line : results) {
             writer.write(line);
             writer.newLine();
         }

@@ -69,8 +69,6 @@ public class BaselineIndexer {
         // Configure index writer.
         Analyzer analyzer = new EnglishAnalyzer();
         Similarity similarity = new BM25Similarity();
-        // Analyzer analyzer = analyzerEnum.getAnalyzer();
-        // Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
@@ -87,15 +85,11 @@ public class BaselineIndexer {
         Util.printInfo("Finished creating index.");
     }
 
-    // public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum,
-    // SimilarityType similarityEnum) throws Exception {
     public static void queryIndex(List<Topic> topics) throws Exception {
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
         Analyzer analyzer = new EnglishAnalyzer();
         Similarity similarity = new BM25Similarity();
-        // Analyzer analyzer = analyzerEnum.getAnalyzer();
-        // Similarity similarity = similarityEnum.getSimilarity();
         Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
         DirectoryReader ireader = DirectoryReader.open(indexDir);
         IndexSearcher isearcher = new IndexSearcher(ireader);
@@ -136,7 +130,6 @@ public class BaselineIndexer {
                 resultBuilder.append(" " + (i + 1) + " ");
                 resultBuilder.append(hits[i].score);
                 resultBuilder.append(" STANDARD");
-                // resultBuilder.append(" " + similarityEnum.getName());
                 results.add(resultBuilder.toString());
             }
         }

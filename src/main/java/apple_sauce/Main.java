@@ -13,6 +13,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         AnalyzerType analyzerEnum = AnalyzerType.getAnalyzerTypeByChoice(scanner);
         SimilarityType similarityEnum = SimilarityType.getSimilarityTypeByChoice(scanner);
+        scanner.close();
 
         Util.printInfo("Parsing topics...");
         List<Topic> topics = TopicsParser.parseTopics("resources/topics");
