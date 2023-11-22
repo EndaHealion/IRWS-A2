@@ -1,5 +1,6 @@
 package apple_sauce;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -11,6 +12,7 @@ import apple_sauce.parsers.*;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws Exception {
+        Util.printInfo(new File(".").getAbsolutePath());
         AnalyzerType analyzerEnum = AnalyzerType.getAnalyzerTypeByChoice(scanner);
         SimilarityType similarityEnum = SimilarityType.getSimilarityTypeByChoice(scanner);
         scanner.close();
