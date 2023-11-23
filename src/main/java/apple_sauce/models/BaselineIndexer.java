@@ -9,28 +9,21 @@ import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.similarities.BM25Similarity;
-import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.search.similarities.Similarity;
-import org.apache.lucene.store.ByteBuffersDirectory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.RAMDirectory;
 
 import apple_sauce.Util;
-import apple_sauce.eNums.AnalyzerType;
-import apple_sauce.eNums.SimilarityType;
 
 public class BaselineIndexer {
     public static final String INDEX_PATH = "index";
@@ -39,11 +32,9 @@ public class BaselineIndexer {
     public static final int MAX_QUERY_RESULTS = 1000;
 
     private static String topicToQueryString(Topic t) {
-        StringBuilder builder = new StringBuilder();
-        builder.append(t.description + " ");
-        builder.append(t.narrative + " ");
-        builder.append(t.title + " ");
-        return builder.toString();
+        return t.description + " " +
+                t.narrative + " " +
+                t.title + " ";
     }
 
     public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
@@ -124,17 +115,16 @@ public class BaselineIndexer {
             Query query = parser.parse(queryString);
             ScoreDoc[] hits = isearcher.search(query, MAX_QUERY_RESULTS).scoreDocs;
 
-            // Gather scores of results results.
+            // Gather scores of results.
             for (int i = 0; i < hits.length; i++) {
                 Document hitDoc = isearcher.doc(hits[i].doc);
-                StringBuilder resultBuilder = new StringBuilder();
-                resultBuilder.append(topic.number);
-                resultBuilder.append(" 0 ");
-                resultBuilder.append(hitDoc.get("DOCNO"));
-                resultBuilder.append(" " + (i + 1) + " ");
-                resultBuilder.append(hits[i].score);
-                resultBuilder.append(" STANDARD");
-                results.add(resultBuilder.toString());
+                String resultBuilder = topic.number +
+                        " 0 " +
+                        hitDoc.get("DOCNO") +
+                        " " + (i + 1) + " " +
+                        hits[i].score +
+                        " STANDARD";
+                results.add(resultBuilder);
             }
         }
 
