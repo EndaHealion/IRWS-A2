@@ -11,6 +11,32 @@ Current list of dependencies:
     - lucene-queryparser
     - lucene-analyzers-common
 
+## Performance
+| MAP              | BM25   | Boolean | Classic | IBS    | LMDirichlet |
+|------------------|--------|---------|---------|--------|-------------|
+| EnglishAnalyzer  | 0.3177 | 0.0860  | 0.2013  | 0.3217 | 0.2875      |
+| StandardAnalyzer | 0.2627 | 0.0802  | 0.1886  | 0.2626 | 0.2493      |
+
+| Recall Precision | BM25   | Boolean | Classic | IBS    | LMDirichlet |
+|------------------|--------|---------|---------|--------|-------------|
+| EnglishAnalyzer  | 0.3620 | 0.1362  | 0.2789  | 0.3618 | 0.3345      |
+| StandardAnalyzer | 0.3123 | 0.1368  | 0.2543  | 0.3184 | 0.2980      |
+
+| P_5              | BM25   | Boolean | Classic | IBS    | LMDirichlet |
+|------------------|--------|---------|---------|--------|-------------|
+| EnglishAnalyzer  | 0.6800 | 0.2560  | 0.4640  | 0.6480 | 0.5840      |
+| StandardAnalyzer | 0.6400 | 0.2080  | 0.4800  | 0.6080 | 0.5760      |
+
+| P_10             | BM25   | Boolean | Classic | IBS    | LMDirichlet |
+|------------------|--------|---------|---------|--------|-------------|
+| EnglishAnalyzer  | 0.6040 | 0.2160  | 0.4320  | 0.5920 | 0.5280      |
+| StandardAnalyzer | 0.5560 | 0.1720  | 0.4160  | 0.5640 | 0.4960      |
+
+| P_100            | BM25   | Boolean | Classic | IBS    | LMDirichlet |
+|------------------|--------|---------|---------|--------|-------------|
+| EnglishAnalyzer  | 0.2720 | 0.0980  | 0.2072  | 0.2740 | 0.2384      |
+| StandardAnalyzer | 0.2248 | 0.0916  | 0.1776  | 0.2260 | 0.2060      |
+
 
 ## Building & Running
 

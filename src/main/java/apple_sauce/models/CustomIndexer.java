@@ -144,7 +144,7 @@ public class CustomIndexer {
                             hitDoc.get("DOCNO"),
                             i + 1,
                             hits[i].score,
-                            analyzerEnum.getName()
+                            analyzerEnum.getName()+"_"+similarityEnum.getName()
                     );
                     results.add(result);
                 }
