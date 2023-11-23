@@ -14,3 +14,5 @@ run:
 clean:
 	mvn clean
 
+eval:
+	./trec_eval-9.0.7/trec_eval qrels.assignment2.part1 output/eval_results.txt
