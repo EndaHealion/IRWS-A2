@@ -7,6 +7,10 @@ target/
 src/main/resources/dataset/
 resources/
 index/
+fbisIndex/
+latimesIndex/
+frIndex/
+ftIndex/
 
 ### IntelliJ IDEA ###
 .idea/
@@ -40,3 +44,6 @@ build/
 .DS_Store
 
 trec_eval-9.0.7/
+/trec_eval/
+
+/output/*.txt

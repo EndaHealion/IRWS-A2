@@ -6,7 +6,15 @@ public class Topic {
     String description;
     String narrative;
 
+    public String getDescription() {
+        return description;
+    }
+
     public Topic() {
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public Topic(int number, String title, String description, String narrative) {
