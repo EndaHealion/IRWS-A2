@@ -48,6 +48,7 @@ public class BaselineIndexer {
 
     public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
             ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs) throws Exception {
+        long startTime = System.currentTimeMillis();
         ArrayList<Document> documents = new ArrayList<Document>();
 
         Util.printInfo("Creating index...");
@@ -82,10 +83,13 @@ public class BaselineIndexer {
         // Clean up.
         iwriter.close();
         indexDir.close();
-        Util.printInfo("Finished creating index.");
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        Util.printInfo("Finished creating index. Total time: " + totalTime + " ms");
     }
 
     public static void queryIndex(List<Topic> topics) throws Exception {
+        long startTime = System.currentTimeMillis();
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
         Analyzer analyzer = new EnglishAnalyzer();
@@ -147,6 +151,8 @@ public class BaselineIndexer {
         writer.close();
         ireader.close();
         indexDir.close();
-        Util.printInfo("Finished evaluating index...");
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        Util.printInfo("Finished evaluating index. Total time: " + totalTime + " ms");
     }
 }

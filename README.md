@@ -39,7 +39,7 @@ For example, part of the tree structure should look like this:
 │           └── apple_sauce
 │               ├── eNums
 │               ├── models
-└──                   └── parsers
+└──             └── parsers
 ```
 
 ### All in one
@@ -112,3 +112,4 @@ Run the following command
 ```bash
 ./trec_eval ../qrels.assignment2.part1 ../output/[AnalyzerTypeName]_[SimilarityName]_eval_results.txt
 ```
+

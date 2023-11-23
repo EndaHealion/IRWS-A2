@@ -7,6 +7,10 @@ target/
 src/main/resources/dataset/
 resources/
 index/
+fbisIndex/
+latimesIndex/
+frIndex/
+ftIndex/
 
 ### IntelliJ IDEA ###
 .idea/

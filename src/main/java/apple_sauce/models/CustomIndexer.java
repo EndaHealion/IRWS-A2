@@ -2,11 +2,19 @@ package apple_sauce.models;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import apple_sauce.parsers.FBISParser;
+import apple_sauce.parsers.FRParser;
+import apple_sauce.parsers.FinancialTimesParser;
+import apple_sauce.parsers.LATimesParser;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -30,7 +38,7 @@ public class CustomIndexer {
     public static final String OUTPUT_PATH = "output/";
     public static final String EVALUATION_RESULT_NAME = "eval_results.txt";
     public static final int MAX_QUERY_RESULTS = 1000;
-
+    private static final int NUM_THREADS = 4;
     private static String topicToQueryString(Topic t) {
         StringBuilder builder = new StringBuilder();
         builder.append(t.description + " ");
@@ -39,47 +47,55 @@ public class CustomIndexer {
         return builder.toString();
     }
 
-        public static void createIndex(ArrayList<FBISDoc> fbisDocs, ArrayList<FederalRegisterDoc> frDocs,
-            ArrayList<FinancialTimesDoc> ftDocs, ArrayList<LATimesDoc> latimesDocs, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+    public static void createIndex(AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+        long startTime = System.currentTimeMillis();
+        Util.printInfo("Creating index using multi-threading...");
 
-        ArrayList<Document> documents = new ArrayList<Document>();
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
-        Util.printInfo("Creating index...");
-        Util.printInfo("Adding parsed documents to index.");
+        executor.submit(() -> {
+            try {
+                indexDocumentsInSeparateDirectory(LATimesParser.getDocInformation(), "latimesIndex", analyzerEnum, similarityEnum);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        executor.submit(() -> {
+            try {
+                indexDocumentsInSeparateDirectory(FinancialTimesParser.getDocInformation(), "ftIndex", analyzerEnum, similarityEnum);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        executor.submit(() -> {
+            try {
+                indexDocumentsInSeparateDirectory(FRParser.getDocInformation(), "frIndex", analyzerEnum, similarityEnum);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        executor.submit(() -> {
+            try {
+                indexDocumentsInSeparateDirectory(FBISParser.getDocInformation(), "fbisIndex", analyzerEnum, similarityEnum);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        for (FBISDoc d : fbisDocs) {
-            documents.add(d.toDocument());
-        }
-        for (FederalRegisterDoc d : frDocs) {
-            documents.add(d.toDocument());
-        }
-        for (FinancialTimesDoc d : ftDocs) {
-            documents.add(d.toDocument());
-        }
-        for (LATimesDoc d : latimesDocs) {
-            documents.add(d.toDocument());
-        }
+        executor.shutdown();
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
 
-        // Configure index writer.
-        Analyzer analyzer = analyzerEnum.getAnalyzer();
-        Similarity similarity = similarityEnum.getSimilarity();
-        Directory indexDir = FSDirectory.open(Paths.get(INDEX_PATH));
-        IndexWriterConfig config = new IndexWriterConfig(analyzer);
-        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-        config.setSimilarity(similarity);
+        Util.printInfo("Finished creating separate indexes. Merging...");
+        mergeIndexes(new String[] {"latimesIndex", "ftIndex", "frIndex", "fbisIndex"}, INDEX_PATH, analyzerEnum);
 
-        // Create index.
-        Util.printInfo("Writing index to disk.");
-        IndexWriter iwriter = new IndexWriter(indexDir, config);
-        iwriter.addDocuments(documents);
-
-        // Clean up.
-        iwriter.close();
-        indexDir.close();
-        Util.printInfo("Finished creating index.");
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        Util.printInfo("Finished creating index. Total time: " + totalTime + " ms");
+        Util.printInfo("Total indexing time: " + totalTime + " ms");
     }
 
-        public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+    public static void queryIndex(List<Topic> topics, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws Exception {
+        long startTime = System.currentTimeMillis();
         Util.printInfo("Evaluating index...");
         // Setup index reader and searcher.
         Analyzer analyzer = analyzerEnum.getAnalyzer();
@@ -107,39 +123,96 @@ public class CustomIndexer {
         fieldWeights.put("HEADER TAG", 1.0f);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(searchFields, analyzer, fieldWeights);
 
-        // Iterate over all topics and query the index.
-        ArrayList<String> results = new ArrayList<String>();
+        ArrayList<QueryResult> results = new ArrayList<>();
         for (Topic topic : topics) {
             String queryString = QueryParser.escape(topicToQueryString(topic));
             Query query = parser.parse(queryString);
             ScoreDoc[] hits = isearcher.search(query, MAX_QUERY_RESULTS).scoreDocs;
 
-            // Gather scores of results results.
             for (int i = 0; i < hits.length; i++) {
                 Document hitDoc = isearcher.doc(hits[i].doc);
-                StringBuilder resultBuilder = new StringBuilder();
-                resultBuilder.append(topic.number);
-                resultBuilder.append(" 0 ");
-                resultBuilder.append(hitDoc.get("DOCNO"));
-                resultBuilder.append(" " + (i + 1) + " ");
-                resultBuilder.append(hits[i].score);
-                resultBuilder.append(" " + analyzerEnum.getName());
-                results.add(resultBuilder.toString());
+                QueryResult result = new QueryResult(
+                        String.valueOf(topic.number),
+                        hitDoc.get("DOCNO"),
+                        i + 1,
+                        hits[i].score,
+                        analyzerEnum.getName()
+                );
+                results.add(result);
             }
         }
-
-        // Write results to file.
-        String outputPath = OUTPUT_PATH + analyzerEnum.getName()+ "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME;
-        BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath));        for (String line : results) {
-            writer.write(line);
-            writer.newLine();
-        }
+        outputResults(results, analyzerEnum, similarityEnum);
 
         // Clean up.
-        writer.close();
         ireader.close();
         indexDir.close();
-        Util.printInfo("Finished evaluating index...");
+        long endTime = System.currentTimeMillis();
+        long totalTime = endTime - startTime;
+        Util.printInfo("Finished evaluating index. Total time: " + totalTime + " ms");
     }
-}
 
+    private static ArrayList<Document> convertToDocuments(ArrayList<?> docs) {
+        ArrayList<Document> documents = new ArrayList<>();
+        for (Object doc : docs) {
+            if (doc instanceof FBISDoc) {
+                documents.add(((FBISDoc) doc).toDocument());
+            } else if (doc instanceof FederalRegisterDoc) {
+                documents.add(((FederalRegisterDoc) doc).toDocument());
+            } else if (doc instanceof FinancialTimesDoc) {
+                documents.add(((FinancialTimesDoc) doc).toDocument());
+            } else if (doc instanceof LATimesDoc) {
+                documents.add(((LATimesDoc) doc).toDocument());
+            }
+        }
+        return documents;
+    }
+
+    private static void outputResults(ArrayList<QueryResult> results, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws IOException {
+        String outputPath = OUTPUT_PATH + analyzerEnum.getName() + "_" + similarityEnum.getName() + "_" + EVALUATION_RESULT_NAME;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath))) {
+            for (QueryResult result : results) {
+                writer.write(result.toString());
+                writer.newLine();
+            }
+        }
+    }
+
+    private static void indexDocumentsInSeparateDirectory(ArrayList<?> docs, String indexPath, AnalyzerType analyzerEnum, SimilarityType similarityEnum) throws IOException {
+        ArrayList<Document> documents = convertToDocuments(docs);
+        Util.printInfo("Opening directory for index at: " + indexPath);
+
+        Directory indexDir = FSDirectory.open(Paths.get(indexPath));
+        IndexWriterConfig config = new IndexWriterConfig(analyzerEnum.getAnalyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        config.setSimilarity(similarityEnum.getSimilarity());
+
+        Util.printInfo("Configuring IndexWriter for: " + indexPath);
+        IndexWriter iwriter = new IndexWriter(indexDir, config);
+
+        Util.printInfo("Starting to index " + documents.size() + " documents in " + indexPath);
+        for (Document doc : documents) {
+            iwriter.addDocument(doc);
+        }
+
+        Util.printInfo("Indexing completed for " + indexPath);
+        iwriter.close();
+        indexDir.close();
+        Util.printInfo("Closed index directory for " + indexPath);
+    }
+
+    private static void mergeIndexes(String[] indexPaths, String mergedIndexPath, AnalyzerType analyzerEnum) throws IOException {
+        Directory mergedIndexDir = FSDirectory.open(Paths.get(mergedIndexPath));
+        IndexWriterConfig config = new IndexWriterConfig(analyzerEnum.getAnalyzer());
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        IndexWriter iwriter = new IndexWriter(mergedIndexDir, config);
+
+        for (String indexPath : indexPaths) {
+            Directory indexDir = FSDirectory.open(Paths.get(indexPath));
+            iwriter.addIndexes(indexDir);
+            indexDir.close();
+        }
+
+        iwriter.close();
+    }
+
+}
