@@ -31,7 +31,7 @@ public class Baseline {
         Util.printInfo("FBIS finished parsing!");
 
         BaselineIndexer.createIndex(fbisDocs, frDocs, ftDocs, laTimesDocs);
-        BaselineIndexer.queryIndex(topics);
+        BaselineSearcher.queryIndex(topics);
 
         // for (FBISDoc d : fbisDocs) {
         // d.print();

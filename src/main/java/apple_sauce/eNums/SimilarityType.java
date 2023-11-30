@@ -12,7 +12,7 @@ public enum SimilarityType {
     BM25(2, new BM25Similarity(), "BM25"),
     BOOLEAN(3, new BooleanSimilarity(), "Boolean"),
     LMDIRICHLET(4, new LMDirichletSimilarity(), "LMDirichlet"),
-    IBS(5, new IBSimilarity(new DistributionLL(), new LambdaDF(), new NormalizationH1()) , "IBS");
+    IBS(5, new IBSimilarity(new DistributionLL(), new LambdaDF(), new NormalizationH1()) , "IB");
 
 
     private final int choice;
@@ -31,7 +31,7 @@ public enum SimilarityType {
                 "2. BM25\n" +
                 "3. Boolean\n" +
                 "4. LMDirichlet\n" +
-                "5. IBS");
+                "5. IB");
 
         while (true) {
             try {

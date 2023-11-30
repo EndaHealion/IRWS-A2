@@ -23,6 +23,6 @@ public class Main {
         Util.printInfo("Topics finished parsing!");
 
         CustomIndexer.createIndex(analyzerEnum, similarityEnum);
-        CustomIndexer.queryIndex(topics, analyzerEnum, similarityEnum);
+        CustomSearcher.queryIndex(topics, analyzerEnum, similarityEnum);
     }
 }
