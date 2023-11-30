@@ -1,6 +1,7 @@
-package apple_sauce.parsers;
+package com.apple.sauce.parsers;
 
-import apple_sauce.models.Topic;
+
+import com.apple.sauce.models.Topic;
 
 import java.io.File;
 import java.io.IOException;

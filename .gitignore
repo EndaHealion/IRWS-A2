@@ -3,39 +3,11 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Ignored because files are too big (2 GB)
-src/main/resources/dataset/
-resources/
-index/
-fbisIndex/
-latimesIndex/
-frIndex/
-ftIndex/
-
 ### IntelliJ IDEA ###
 .idea/
 *.iws
 *.iml
 *.ipr
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
@@ -43,7 +15,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-trec_eval-9.0.7/
-/trec_eval/
-
-/output/*.txt
+src/main/resources/
