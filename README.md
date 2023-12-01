@@ -121,6 +121,13 @@ make run
 make (This runs "clean", "build" and then "run" in order)
 ```
 
+### Choosing which analyzer and similarity measure to use
+When running the program, you'll be prompted to choose an analyzer to use. To achieve the best MAP score, the EnglishAnalyzer should be selected.
+
+For the similarity measure, IB Similarity and BM25 Similarity can be chosen, as both gave sufficient MAP scores during our testing phase. 
+
+We'd recommend running a build using both versions. 
+
 ### Trec Eval
 To run trec eval, you must first run the program and generate the results file. Then you can run the following command:
 
@@ -136,6 +143,6 @@ cd trec_eval
 
 Run the following command
 ```bash
-./trec_eval ../qrels.assignment2.part1 ../output/[AnalyzerTypeName]_[SimilarityName]_eval_results.txt
+./treceval ../[your_qrels_file] ../output/[your_eval_file]
 ```
 
