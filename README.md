@@ -17,7 +17,7 @@ Current list of dependencies:
 | EnglishAnalyzer  | 0.3177 | 0.0860  | 0.2013  | 0.3217 | 0.2875      |
 | StandardAnalyzer | 0.2627 | 0.0802  | 0.1886  | 0.2626 | 0.2493      |
 
-| Recall Precision | BM25   | Boolean | Classic | IB     | LMDirichlet |
+| R-Precision      | BM25   | Boolean | Classic | IB     | LMDirichlet |
 |------------------|--------|---------|---------|--------|-------------|
 | EnglishAnalyzer  | 0.3620 | 0.1362  | 0.2789  | 0.3618 | 0.3345      |
 | StandardAnalyzer | 0.3123 | 0.1368  | 0.2543  | 0.3184 | 0.2980      |
